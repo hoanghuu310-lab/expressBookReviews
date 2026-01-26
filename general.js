@@ -6,7 +6,11 @@ const getAllBooks = async () => {
         const response = await axios.get('http://localhost:5000/');
         console.log(JSON.stringify(response.data, null, 4));
     } catch (error) {
-        console.error("Error fetching all books:", error);
+        if (error.response) {
+            console.error(`Error ${error.response.status}: ${error.response.data.message || error.message}`);
+        } else {
+            console.error("Error fetching all books:", error.message);
+        }
     }
 }
 
@@ -17,7 +21,11 @@ const getBookByISBN = (isbn) => {
         console.log(JSON.stringify(response.data, null, 4));
     })
     .catch(error => {
-        console.error(`Error fetching book with ISBN ${isbn}:`, error);
+        if (error.response && error.response.status === 404) {
+            console.error(`Book with ISBN ${isbn} not found.`);
+        } else {
+            console.error(`Error fetching book with ISBN ${isbn}:`, error.message);
+        }
     });
 }
 
@@ -28,7 +36,11 @@ const getBookByAuthor = (author) => {
         console.log(JSON.stringify(response.data, null, 4));
     })
     .catch(error => {
-        console.error(`Error fetching books by author ${author}:`, error);
+        if (error.response && error.response.status === 404) {
+            console.error(`No books found for author: ${author}`);
+        } else {
+            console.error(`Error fetching books by author ${author}:`, error.message);
+        }
     });
 }
 
@@ -39,7 +51,11 @@ const getBookByTitle = (title) => {
         console.log(JSON.stringify(response.data, null, 4));
     })
     .catch(error => {
-        console.error(`Error fetching books with title ${title}:`, error);
+        if (error.response && error.response.status === 404) {
+             console.error(`No books found with title: ${title}`);
+        } else {
+            console.error(`Error fetching books with title ${title}:`, error.message);
+        }
     });
 }
 
