@@ -1,0 +1,25 @@
+Command:
+curl https://api.github.com/repos/hoanghuu310-lab/expressBookReviews > githubrepo
+
+Output:
+{
+  "name": "expressBookReviews",
+  "full_name": "hoanghuu310-lab/expressBookReviews",
+  "private": false,
+  "owner": {
+    "login": "hoanghuu310-lab",
+    "html_url": "https://github.com/hoanghuu310-lab",
+    "type": "User"
+  },
+  "html_url": "https://github.com/hoanghuu310-lab/expressBookReviews",
+  "description": "Express Book Review application for the final project",
+  "fork": true,
+  "parent": {
+    "name": "expressBookReviews",
+    "full_name": "ibm-developer-skills-network/expressBookReviews",
+    "owner": {
+      "login": "ibm-developer-skills-network",
+      "html_url": "https://github.com/ibm-developer-skills-network"
+    }
+  }
+}
