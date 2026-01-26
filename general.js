@@ -1,90 +1,73 @@
 /**
  * General.js
- * Implementation of book retrieval tasks using Axios.
- * This file contains functions to get books by list, ISBN, Author, and Title.
+ * Implementation of book retrieval tasks with robust error handling.
  */
-
 const axios = require('axios');
 
-/**
- * Task 10: Get all books available in the shop.
- * Method: GET
- * Implementation: Uses async/await syntax.
- * Output: Logs the list of books to the console.
- */
+// Task 10: Get all books (Async/Await)
 async function getAllBooks() {
     try {
         const response = await axios.get('http://localhost:5000/');
-        console.log("Successfully retrieved all books:");
-        console.log(JSON.stringify(response.data, null, 4));
+        console.log("Task 10 Output:", JSON.stringify(response.data, null, 4));
         return response.data;
     } catch (error) {
-        console.error("Error retrieving book list:", error.message);
+        console.error("Task 10 Error:", error.message);
         return null;
     }
 }
 
-/**
- * Task 11: Get book details based on ISBN.
- * Method: GET
- * Implementation: Uses Promise callbacks (then/catch).
- * @param {number|string} isbn - The ISBN of the book to retrieve.
- */
+// Task 11: Get book by ISBN (Promise)
 function getBookByISBN(isbn) {
-    // Making a request to the server with the specific ISBN
     axios.get(`http://localhost:5000/isbn/${isbn}`)
     .then(response => {
-        // Handle success
-        console.log(`Successfully retrieved book with ISBN ${isbn}:`);
-        console.log(JSON.stringify(response.data, null, 4));
+        console.log("Task 11 Output:", JSON.stringify(response.data, null, 4));
         return response.data;
     })
     .catch(error => {
-        // Handle error (e.g., book not found)
-        console.error(`Error retrieving book with ISBN ${isbn}:`, error.message);
-        return null;
+        if (error.response && error.response.status === 404) {
+            console.log(`Task 11 Info: Book with ISBN ${isbn} not found.`);
+        } else {
+            console.error(`Task 11 Error: ${error.message}`);
+        }
     });
 }
 
-/**
- * Task 12: Get book details based on Author.
- * Method: GET
- * Implementation: Uses Promise callbacks.
- * @param {string} author - The name of the author.
- */
+// Task 12: Get book by Author (Promise)
 function getBookByAuthor(author) {
     axios.get(`http://localhost:5000/author/${author}`)
     .then(response => {
-        console.log(`Successfully retrieved books by author ${author}:`);
-        console.log(JSON.stringify(response.data, null, 4));
+        if (response.data && Object.keys(response.data).length > 0) {
+            console.log("Task 12 Output:", JSON.stringify(response.data, null, 4));
+        } else {
+            console.log(`Task 12 Info: No books found for author ${author}.`);
+        }
         return response.data;
     })
     .catch(error => {
-        console.error(`Error retrieving books by author ${author}:`, error.message);
-        return null;
+        if (error.response && error.response.status === 404) {
+            console.log(`Task 12 Info: Author ${author} not found.`);
+        } else {
+            console.error(`Task 12 Error: ${error.message}`);
+        }
     });
 }
 
-/**
- * Task 13: Get book details based on Title.
- * Method: GET
- * Implementation: Uses Promise callbacks.
- * @param {string} title - The title of the book.
- */
+// Task 13: Get book by Title (Promise)
 function getBookByTitle(title) {
     axios.get(`http://localhost:5000/title/${title}`)
     .then(response => {
-        console.log(`Successfully retrieved books with title ${title}:`);
-        console.log(JSON.stringify(response.data, null, 4));
+        console.log("Task 13 Output:", JSON.stringify(response.data, null, 4));
         return response.data;
     })
     .catch(error => {
-        console.error(`Error retrieving books with title ${title}:`, error.message);
-        return null;
+        if (error.response && error.response.status === 404) {
+            console.log(`Task 13 Info: Title "${title}" not found.`);
+        } else {
+            console.error(`Task 13 Error: ${error.message}`);
+        }
     });
 }
 
-// Export functions for the grading system
 module.exports = {
     getAllBooks,
     getBookByISBN,
@@ -92,7 +75,7 @@ module.exports = {
     getBookByTitle
 };
 
-// Execution of functions for demonstration purposes
+// Test
 getAllBooks();
 getBookByISBN(1);
 getBookByAuthor("Chinua Achebe");
