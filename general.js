@@ -1,8 +1,31 @@
 /**
  * General.js
- * Implementation of book retrieval tasks with robust error handling.
+ * Modular implementation of book retrieval tasks using Axios.
+ * Includes separate error handling function for better maintainability.
  */
 const axios = require('axios');
+
+/**
+ * Helper function to handle errors centrally (Modularization)
+ * @param {Object} error - The error object from Axios
+ * @param {String} context - Context string for logging
+ */
+function handleAxiosError(error, context) {
+    if (error.response) {
+        // The request was made and the server responded with a status code
+        if (error.response.status === 404) {
+            console.log(`${context} Info: Resource not found (404).`);
+        } else {
+            console.error(`${context} Error: Server returned status ${error.response.status}.`);
+        }
+    } else if (error.request) {
+        // The request was made but no response was received
+        console.error(`${context} Error: No response received from server.`);
+    } else {
+        // Something happened in setting up the request
+        console.error(`${context} Error: ${error.message}`);
+    }
+}
 
 // Task 10: Get all books (Async/Await)
 async function getAllBooks() {
@@ -11,7 +34,7 @@ async function getAllBooks() {
         console.log("Task 10 Output:", JSON.stringify(response.data, null, 4));
         return response.data;
     } catch (error) {
-        console.error("Task 10 Error:", error.message);
+        handleAxiosError(error, "Task 10");
         return null;
     }
 }
@@ -24,11 +47,7 @@ function getBookByISBN(isbn) {
         return response.data;
     })
     .catch(error => {
-        if (error.response && error.response.status === 404) {
-            console.log(`Task 11 Info: Book with ISBN ${isbn} not found.`);
-        } else {
-            console.error(`Task 11 Error: ${error.message}`);
-        }
+        handleAxiosError(error, `Task 11 (ISBN ${isbn})`);
     });
 }
 
@@ -44,11 +63,7 @@ function getBookByAuthor(author) {
         return response.data;
     })
     .catch(error => {
-        if (error.response && error.response.status === 404) {
-            console.log(`Task 12 Info: Author ${author} not found.`);
-        } else {
-            console.error(`Task 12 Error: ${error.message}`);
-        }
+        handleAxiosError(error, `Task 12 (Author ${author})`);
     });
 }
 
@@ -60,11 +75,7 @@ function getBookByTitle(title) {
         return response.data;
     })
     .catch(error => {
-        if (error.response && error.response.status === 404) {
-            console.log(`Task 13 Info: Title "${title}" not found.`);
-        } else {
-            console.error(`Task 13 Error: ${error.message}`);
-        }
+        handleAxiosError(error, `Task 13 (Title ${title})`);
     });
 }
 
@@ -75,7 +86,7 @@ module.exports = {
     getBookByTitle
 };
 
-// Test
+// Execution for verification
 getAllBooks();
 getBookByISBN(1);
 getBookByAuthor("Chinua Achebe");
