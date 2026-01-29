@@ -4,81 +4,65 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-// Đăng ký người dùng mới
 public_users.post("/register", (req,res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-
+  const { username, password } = req.body;
   if (username && password) {
-    if (!isValid(username)) { 
+    if (!users.find(u => u.username === username)) {
       users.push({"username":username,"password":password});
       return res.status(200).json({message: "User successfully registred. Now you can login"});
-    } else {
-      return res.status(404).json({message: "User already exists!"});    
     }
-  } 
+    return res.status(404).json({message: "User already exists!"});
+  }
   return res.status(404).json({message: "Unable to register user."});
 });
 
-// Task 10: Lấy danh sách sách bằng Promise
+// Task 10: Get book list using Promises
 public_users.get('/', function (req, res) {
-    const getBooks = new Promise((resolve, reject) => {
-        resolve(res.send(JSON.stringify({books}, null, 4)));
-    });
-    getBooks.then(() => console.log("Promise for Task 10 resolved"));
+  const getBooks = new Promise((resolve) => {
+    resolve(res.status(200).json(books));
+  });
+  return getBooks;
 });
 
-// Task 11: Lấy chi tiết sách theo ISBN bằng Promise
+// Task 11: Get book details by ISBN using Promises
 public_users.get('/isbn/:isbn', function (req, res) {
-    const isbn = req.params.isbn;
-    const getBookByIsbn = new Promise((resolve, reject) => {
-        if (books[isbn]) {
-            resolve(res.send(JSON.stringify(books[isbn], null, 4)));
-        } else {
-            reject(res.status(404).json({message: "Book not found"}));
-        }
-    });
-    getBookByIsbn.then(() => console.log("Promise for Task 11 resolved"));
+  const isbn = req.params.isbn;
+  const getByIsbn = new Promise((resolve, reject) => {
+    if (books[isbn]) {
+      resolve(res.status(200).json(books[isbn]));
+    } else {
+      reject(res.status(404).json({message: "Book not found"}));
+    }
+  });
+  return getByIsbn;
 });
 
-// Task 12: Lấy sách theo Tác giả bằng Promise
+// Task 12: Get book details by author using Promises
 public_users.get('/author/:author', function (req, res) {
-    const author = req.params.author;
-    const getBooksByAuthor = new Promise((resolve, reject) => {
-        let booksByAuthor = [];
-        Object.keys(books).forEach((key) => {
-            if (books[key].author === author) {
-                booksByAuthor.push({ "isbn": key, ...books[key] });
-            }
-        });
-        resolve(res.send(JSON.stringify({booksbyauthor: booksByAuthor}, null, 4)));
-    });
-    getBooksByAuthor.then(() => console.log("Promise for Task 12 resolved"));
+  const author = req.params.author;
+  const getByAuthor = new Promise((resolve) => {
+    let results = Object.values(books).filter(b => b.author === author);
+    resolve(res.status(200).json({booksbyauthor: results}));
+  });
+  return getByAuthor;
 });
 
-// Task 13: Lấy sách theo Tiêu đề bằng Promise
+// Task 13: Get book details by title using Promises
 public_users.get('/title/:title', function (req, res) {
-    const title = req.params.title;
-    const getBooksByTitle = new Promise((resolve, reject) => {
-        let booksByTitle = [];
-        Object.keys(books).forEach((key) => {
-            if (books[key].title === title) {
-                booksByTitle.push({ "isbn": key, ...books[key] });
-            }
-        });
-        resolve(res.send(JSON.stringify({booksbytitle: booksByTitle}, null, 4)));
-    });
-    getBooksByTitle.then(() => console.log("Promise for Task 13 resolved"));
+  const title = req.params.title;
+  const getByTitle = new Promise((resolve) => {
+    let results = Object.values(books).filter(b => b.title === title);
+    resolve(res.status(200).json({booksbytitle: results}));
+  });
+  return getByTitle;
 });
 
-// Lấy đánh giá của sách
 public_users.get('/review/:isbn', function (req, res) {
   const isbn = req.params.isbn;
   if (books[isbn]) {
-    res.send(JSON.stringify(books[isbn].reviews, null, 4));
-  } else {
-    res.status(404).json({message: "Book not found"});
+    return res.status(200).json(books[isbn].reviews);
   }
+  return res.status(404).json({message: "Not found"});
 });
 
 module.exports.general = public_users;
